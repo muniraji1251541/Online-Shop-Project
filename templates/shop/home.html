@@ -1,0 +1,11 @@
+{% extends 'shop/dummy.html' %}{% block title %}
+<title>Home</title>
+{% endblock %} {% block content %}
+<div class="container-fluid">
+    {% include 'inc/message.html' %} {% if request.user.is_authenticated %}
+    <h2 class="text-center">Welcome To Online Shop Mr/Ms {{request.user.name}}</h2>
+    {% else %}
+    <h2 class="text-center">Welcome To Online Shop</h2>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'shop/dummy.html' %} {% block title %}
+<title>Products Details</title>
+{% endblock %} {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h3 class="mb-3">{{products}} - Details</h3>
+            <hr>
+        </div>
+        <div class="col-lg-4 col-md-6 my-3 mx-5">
+            <a href="{{products.p_image.url}}">
+                <img src="{{products.p_image.url}}" alt="" style="width: 400px;">
+            </a>
+        </div>
+        <div class="col-lg-6 col-md-6 my-3">
+            <h4>Model: {{products.name}}</h4>
+            <h4>Brand: {{products.brand}}</h4>
+            <h4>Current Price:<span style="color: red;"> <s>Rs. {{products.original_price | stringformat:'d'}}</s></span></h4>
+            <h4>Offer Price:<span style="color: blue;"> Rs. {{products.selling_price | stringformat:'d'}}</span></h4>
+            <p>Specification: {{products.specification}}</p>
+            {% if products.quantity > 0 %}
+            <input type="hidden" value="{{products.id}}" id="pid">
+            <!--{% csrf_token %} -->
+            <div class="input-group" style="width: 150px;">
+                <button class="input-group-text bg-primary text-light" id="btnMinus"><i class="fa fa-minus"></i></button>
+                <input type="text" value="1" class="form-control text-center" id="txtQty" name="qty">
+                <button class="input-group-text bg-primary text-light" id="btnPlus"><i class="fa fa-plus"></i></button>
+            </div>
+            <div class="mt-4">
+                <button class="btn btn-warning" id="btnCart"><i class="fa fa-cart"></i> Add to cart</button> {% else %}
+                <button class="btn btn-danger">Out of stock</button>{% endif %}
+                <button class="btn btn-danger" id="btnFav"><i class="fa fa-heart"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(event) {
+        let btnPlus = document.getElementById('btnPlus');
+        let btnMinus = document.getElementById('btnMinus');
+        let txtQty = document.getElementById('txtQty');
+        let btnCart = document.getElementById('btnCart');
+        let btnFav = document.getElementById('btnFav');
+        let pid = document.getElementById('pid');
+
+        btnPlus.addEventListener('click', function() {
+            let qty = Number(txtQty.value, 10);
+            qty = isNaN(qty) ? 0 : qty;
+            //console.log(qty)
+            if (qty < 10) {
+                qty++;
+                txtQty.value = qty;
+            }
+        })
+        btnMinus.addEventListener('click', function() {
+            let qty = Number(txtQty.value, 10);
+            qty = isNaN(qty) ? 0 : qty;
+            //console.log(qty)
+            if (qty > 1) {
+                qty--;
+                txtQty.value = qty;
+            }
+        })
+
+        btnCart.addEventListener('click', function() {
+            let qty = Number(txtQty.value, 10);
+            qty = isNaN(qty) ? 0 : qty;
+            if (qty > 0) {
+                let postObj = {
+                        product_qty: qty,
+                        pid: pid.value,
+                        //token: tkn
+
+                    }
+                    //console.log(postObj)
+                fetch('/cart', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-Width': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{csrf_token}}',
+                    },
+                    body: JSON.stringify(postObj)
+                }).then(response => {
+                    return response.json();
+                }).then(data => {
+                    //console.log(data);
+                    alert(data['status']);
+                });
+            }
+        });
+        btnFav.addEventListener('click', function() {
+            let postObj = {
+                    pid: pid.value
+
+                }
+                //console.log(postObj)
+            fetch('/fav', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-Width': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{csrf_token}}',
+                },
+                body: JSON.stringify(postObj)
+            }).then(response => {
+                return response.json();
+            }).then(data => {
+                //console.log(data);
+                alert(data['status']);
+            });
+        });
+    })
+</script>
+{% endblock %}

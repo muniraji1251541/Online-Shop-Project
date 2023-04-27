@@ -1,0 +1,24 @@
+{% extends 'shop/dummy.html' %} {% block title %}
+<title>Login</title>
+{% endblock %} {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            {% include 'inc/message.html' %}
+            <h2>Login Form</h2>
+            <hr>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <label for="em">Email</label>
+                <input type="email" name="em" id="em" class="form-control"><br>
+                <label for="pw">Password</label>
+                <input type="password" name="pw" id="pw" class="form-control"><br>
+                <input type="submit" value="Register" class="btn btn-danger mb-3">
+            </form>
+            <div class="my-4">
+                <h3>Forgot Password <a href="{% url 'forgot_password' %}">Click Here</a></h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

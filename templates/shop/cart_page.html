@@ -1,0 +1,59 @@
+{% extends 'shop/dummy.html' %} {% load static %} {% block title %}
+<title>Cart</title>
+{% endblock %} {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 mb-4">
+            {% if request.user.is_authenticated %}
+            <h2>Cart Items</h2>
+            <hr> {% if cart %}
+            <div>
+                <table border="2px">
+                    <tr>
+                        <th>Product Image</th>
+                        <th>Product Name</th>
+                        <th>Selling Price</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                        <th>Remove</th>
+                    </tr>
+                    {% for item in cart %}
+                    <tr>
+                        <td><img src="{{item.product.p_image.url}}" alt="" height="100px"></td>
+                        <td>{{item.product.name}}</td>
+                        <td>Rs.{{item.product.selling_price | stringformat:'d'}}</td>
+                        <td>{{item.product_qty}}</td>
+                        <td class="amt">{{item.total_price | stringformat:'d'}}</td>
+                        <td><a href="{% url 'remove_cart' item.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are yor sure to remove?')"><i class="fa fa-trash"></i> Remove</a></td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3"></td>
+                        <td><b>Total Amount</b></td>
+                        <td id="net">0</td>
+                        <td><button class="btn btn-primary btn-sm">Check Out</button></td>
+                    </tr>
+                </table>
+            </div>
+            {% else %}
+            <h2>Cart is Empty</h2>
+            <img src="{% static 'images/cart.jpg' %}" alt="" style="width: 400px;"> {% endif %} {% else %}
+            <h2>LogIn and then use Cart</h2>
+            <hr>
+            <h3><a href="{% url 'user_login' %}">LogIn</a></h3>
+            {% endif %}
+
+        </div>
+        <div></div>
+    </div>
+</div>
+
+<script>
+    const nodes = document.querySelectorAll('.amt');
+    const arr = Array.from(nodes);
+    const res = arr.reduce((pre, cur) => {
+        return pre += Number(cur.textContent)
+    }, 0);
+    document.getElementById('net').innerHTML = 'Rs. ' + res;
+</script>
+{% endblock %}
